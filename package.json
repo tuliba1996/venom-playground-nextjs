@@ -9,17 +9,36 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.0.16",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
     "@types/node": "20.2.5",
     "@types/react": "18.2.7",
     "@types/react-dom": "18.2.4",
+    "ace-builds": "^1.15.2",
     "autoprefixer": "10.4.14",
+    "classnames": "^2.3.2",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
+    "everscale-inpage-provider": "^0.3.61",
+    "everscale-standalone-client": "^2.1.19",
+    "js-base64": "^3.7.5",
     "next": "13.4.4",
     "postcss": "8.4.24",
+    "prettier": "^2.8.8",
+    "prettier-plugin-organize-imports": "^3.2.2",
     "react": "18.2.0",
+    "react-ace": "^10.1.0",
+    "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "18.2.0",
+    "react-scripts": "5.0.1",
+    "react-tiny-popover": "^7.2.3",
+    "sass": "^1.58.3",
     "tailwindcss": "3.3.2",
-    "typescript": "5.0.4"
+    "typescript": "5.0.4",
+    "venom-connect": "^1.0.20",
+    "web-vitals": "^2.1.4"
   }
 }
