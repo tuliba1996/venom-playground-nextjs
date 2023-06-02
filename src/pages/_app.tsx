@@ -1,8 +1,14 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
-import { useInitVenomConnect } from '@/hooks/useInitVenomConnect'
+import { VenomWalletProvider } from '@/context/VenomWalletProvider'
+
 
 export default function App({ Component, pageProps }: AppProps) {
 
-  return <Component {...pageProps} />
+  return (
+    <VenomWalletProvider>
+      <Component {...pageProps} />
+    </VenomWalletProvider>
+  )
+
 }

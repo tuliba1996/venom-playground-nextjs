@@ -1,16 +1,17 @@
 import React from 'react'
-import { useInitVenomConnect } from '@/hooks/useInitVenomConnect'
 import Button from '@/components/Button'
+import { useVenomWallet } from '@/context/useVenomWallet'
 
 function ConnectWallet() {
-  const { venomConnect, address, venomProvider } = useInitVenomConnect()
+
+  const { venomConnect, address, onConnectWallet, onDisconnectWallet } = useVenomWallet()
 
   const onConnectButtonClick = async () => {
-    await venomConnect?.connect()
+    await onConnectWallet()
   }
 
   const onDisconnectButtonClick = async () => {
-    venomProvider?.disconnect()
+    onDisconnectWallet()
   }
 
   return (

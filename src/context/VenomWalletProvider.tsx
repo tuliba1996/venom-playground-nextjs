@@ -1,59 +1,49 @@
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
+import { ConnectionProperties, EverscaleStandaloneClient } from 'everscale-standalone-client'
+import { INIT_THEME, NETWORKS, THEME_LIST } from '@/constant'
 import { VenomConnect } from 'venom-connect'
 import { ProviderRpcClient } from 'everscale-inpage-provider'
-import { ConnectionProperties, EverscaleStandaloneClient } from 'everscale-standalone-client'
-import { useEffect, useState } from 'react'
+import { ThemeNameList } from 'venom-connect/src/themes'
+import { ToggledNetworks } from '@/types'
 
+type VenomWalletContextValue = {
+  venomConnect: any,
+  venomProvider: any,
+  address: string,
+  balance: string | number,
+  publicKey: string,
+  theme: string,
+  currentNetworkId: ToggledNetworks
+  onChangeNetwork: (id: ToggledNetworks) => void,
+  onToggleTheme: () => void,
+  onConnectWallet: () => void,
+  onDisconnectWallet: () => void,
+  getNetWorkData: (checkNetworkId: number, field: keyof typeof NETWORKS.venom) => void,
+};
 
-const initTheme = 'light' as const
+export const VenomWalletContext = createContext<VenomWalletContextValue | null>(null)
 
-const NETWORKS = {
-  venom: {
-    name: 'Venom Mainnet',
-    checkNetworkId: 1,
-    connection: {
-      id: 1,
-      group: 'venom_mainnet',
-      type: 'jrpc',
-      data: {
-        endpoint: 'https://jrpc.venom.foundation/rpc',
-      },
-    },
-  },
-  venomTestnet: {
-    name: 'Venom Testnet',
-    checkNetworkId: 1000,
-    connection: {
-      id: 1000,
-      group: 'venom_testnet',
-      type: 'jrpc',
-      data: {
-        endpoint: 'https://jrpc-testnet.venom.foundation/rpc',
-      },
-    },
-  },
-}
-
-type ToggledNetworks = 1 | 1000 // | 1010;
 
 const getNetworkData = (checkNetworkId: number, field: keyof typeof NETWORKS.venom) => {
   switch (checkNetworkId) {
     case 1000:
       return NETWORKS.venomTestnet[field]
-
     case 1:
     default:
       return NETWORKS.venom[field]
   }
 }
 
+
 const standaloneFallback = (checkNetworkId: number = 1000) =>
   EverscaleStandaloneClient.create({
     connection: getNetworkData(checkNetworkId, 'connection') as ConnectionProperties,
   })
 
+
 const initVenomConnect = async (checkNetworkId: number = 1000) => {
   return new VenomConnect({
-    theme: initTheme,
+    theme: INIT_THEME,
     checkNetworkId: checkNetworkId,
     providersOptions: {
       venomwallet: {
@@ -140,47 +130,47 @@ const initVenomConnect = async (checkNetworkId: number = 1000) => {
 }
 
 
-export const useInitVenomConnect = () => {
+type VenomWalletProviderProps = {
+  children: React.ReactNode;
+};
+
+export function VenomWalletProvider({ children }: VenomWalletProviderProps) {
+  const [address, setAddress] = useState()
   const [venomConnect, setVenomConnect] = useState<VenomConnect | undefined>()
+  const [theme, setTheme] = useState<ThemeNameList | string>(INIT_THEME)
+
   const [balance, setBalance] = useState()
   const [publicKey, setPublicKey] = useState()
 
   const [venomProvider, setVenomProvider] = useState<any>()
 
-  const [address, setAddress] = useState()
 
   const [currentNetworkId, setCurrentNetworkId] = useState<ToggledNetworks>(
-    1000,
-  )
+    1000)
 
-  const getPublicKey = async (provider: any) => {
-    const providerState = await provider?.getProviderState?.()
 
-    return providerState?.permissions.accountInteraction?.publicKey.toString()
-  }
+  const onChangeNetwork = useCallback(async (networkId: ToggledNetworks) => {
+    setCurrentNetworkId(networkId)
+  }, [currentNetworkId])
 
-  const getBalance = async (provider: any, _address: string) => {
-    try {
-      return await provider?.getBalance?.(_address)
-    } catch (error) {
-      return undefined
-    }
-  }
+  const getTheme = () => venomConnect?.getInfo()?.themeConfig?.name?.toString?.() || '...'
 
-  const check = async (_provider: any) => {
-    const _address = _provider ? await getAddress(_provider) : undefined
-    const _balance = _provider && _address ? await getBalance(_provider, _address) : undefined
-    const _publicKey = _provider ? await getPublicKey(_provider) : undefined
+  const onToggleTheme = useCallback(async () => {
+    const currentTheme = getTheme()
 
-    setAddress(_address)
-    setBalance(_balance)
-    setPublicKey(_publicKey)
+    const lastIndex = THEME_LIST.length - 1
 
-    if (_provider && _address)
-      setTimeout(() => {
-        check(_provider)
-      }, 100)
-  }
+    const currentThemeIndex = THEME_LIST.findIndex((item) => item === currentTheme)
+
+    const theme =
+      currentThemeIndex >= lastIndex || !~currentThemeIndex || !~lastIndex
+        ? THEME_LIST[0]
+        : THEME_LIST[currentThemeIndex + 1]
+
+    await venomConnect?.updateTheme(theme)
+
+    setTheme(getTheme())
+  }, [venomConnect])
 
   const getAddress = async (provider: any) => {
     const providerState = await provider?.getProviderState?.()
@@ -200,15 +190,58 @@ export const useInitVenomConnect = () => {
     await checkAuth(initedVenomConnect)
   }
 
+  const getBalance = async (provider: any, _address: string) => {
+    try {
+      return await provider?.getBalance?.(_address)
+    } catch (error) {
+      return undefined
+    }
+  }
+
+  const getPublicKey = async (provider: any) => {
+    const providerState = await provider?.getProviderState?.()
+
+    return providerState?.permissions.accountInteraction?.publicKey.toString()
+  }
+
+  const check = async (_provider: any) => {
+    const _address = _provider ? await getAddress(_provider) : undefined
+    const _balance = _provider && _address ? await getBalance(_provider, _address) : undefined
+    const _publicKey = _provider ? await getPublicKey(_provider) : undefined
+
+    setAddress(_address)
+    setBalance(_balance)
+    setPublicKey(_publicKey)
+
+    if (_provider && _address)
+      setTimeout(() => {
+        check(_provider)
+      }, 100)
+  }
+
+
+  const onConnectWallet = useCallback(async () => {
+    venomConnect?.connect()
+  }, [venomConnect, venomProvider])
+
+  const onDisconnectWallet = useCallback(async () => {
+    venomProvider?.disconnect()
+  }, [venomConnect, venomProvider])
+
+
+  useEffect(() => {
+    onInitButtonClick()
+  }, [currentNetworkId])
+
   const onConnect = async (provider: any) => {
     setVenomProvider(provider)
 
     await check(provider)
   }
 
-  useEffect(() => {
-    onInitButtonClick()
-  }, [currentNetworkId])
+  const getNetWorkData = useCallback((checkNetworkId: number, field: keyof typeof NETWORKS.venom) => {
+    return getNetworkData(checkNetworkId, field)
+  }, [])
 
   useEffect(() => {
     const off = venomConnect?.on('connect', onConnect)
@@ -216,14 +249,30 @@ export const useInitVenomConnect = () => {
     return () => {
       off?.()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [venomConnect])
 
-  return {
-    venomConnect,
-    address,
-    venomProvider,
-    balance,
-    publicKey,
-  }
+
+  const value = useMemo(
+    () => ({
+      venomConnect,
+      venomProvider,
+      address,
+      balance,
+      theme,
+      publicKey,
+      currentNetworkId,
+      onChangeNetwork,
+      onToggleTheme,
+      onConnectWallet,
+      onDisconnectWallet,
+      getNetWorkData,
+    }),
+    [venomConnect, venomProvider, address, theme, publicKey, onToggleTheme, onConnectWallet, onDisconnectWallet, onChangeNetwork, getNetWorkData],
+  )
+
+  return (
+    <VenomWalletContext.Provider value={value}>
+      {children}
+    </VenomWalletContext.Provider>
+  )
 }
