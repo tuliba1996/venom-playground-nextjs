@@ -1,4 +1,4 @@
-import { ProviderRpcClient } from 'everscale-inpage-provider'
+import { Address, ProviderRpcClient, Transaction } from 'everscale-inpage-provider'
 import { useState } from 'react'
 import Button from '../components/Button'
 import Panel from '../components/Panel'
@@ -21,7 +21,7 @@ export const GetTransaction = ({
 
   const [active, setActive] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean | undefined>()
-  const [transaction, setTransaction] = useState()
+  const [transaction, setTransaction] = useState<any>()
 
   const onButtonClick = async () => {
     setActive(true)

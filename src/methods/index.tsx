@@ -21,17 +21,9 @@ import { SignData } from './signData'
 import { SignDataRaw } from './signDataRaw'
 import { Subscribe } from './subscribe'
 import { Tvc } from './tvc'
+import { GetProviderState } from '@/methods/getProviderState'
+import { GetFullContractState } from '@/methods/getFullContractState'
 
-
-import dynamic from 'next/dynamic'
-
-const GetProviderState = dynamic(() => import('./getProviderState').then(imp => imp.GetProviderState), {
-  ssr: false,
-})
-
-const GetFullContractState = dynamic(() => import('./getFullContractState').then(imp => imp.GetFullContractState), {
-  ssr: false,
-})
 
 type MethodObject = {
   name: string
@@ -49,7 +41,7 @@ type MethodObject = {
   }) => JSX.Element | null
 }
 
-export const methods: ({ method: ({ provider }: { provider: ProviderRpcClient }) => JSX.Element; name: string } | { method: React.ComponentClass<{ provider: ProviderRpcClient }> | React.FunctionComponent<{ provider: ProviderRpcClient }>; name: string })[] = [
+export const methods: MethodObject[] = [
   { name: 'changeAccount', method: ChangeAccount },
   { name: 'getProviderState', method: GetProviderState },
   { name: 'getFullContractState', method: GetFullContractState },

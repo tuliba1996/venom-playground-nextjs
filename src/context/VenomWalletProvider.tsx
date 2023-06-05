@@ -9,16 +9,16 @@ import { ToggledNetworks } from '@/types'
 type VenomWalletContextValue = {
   venomConnect: any,
   venomProvider: any,
-  address: string,
-  balance: string | number,
-  publicKey: string,
-  theme: string,
+  address?: string,
+  balance: number | null,
+  publicKey?: string,
+  theme: string | null,
   currentNetworkId: ToggledNetworks
   onChangeNetwork: (id: ToggledNetworks) => void,
   onToggleTheme: () => void,
   onConnectWallet: () => void,
   onDisconnectWallet: () => void,
-  getNetWorkData: (checkNetworkId: number, field: keyof typeof NETWORKS.venom) => void,
+  getNetWorkData: (checkNetworkId: number, field: keyof typeof NETWORKS.venom) => any,
 };
 
 export const VenomWalletContext = createContext<VenomWalletContextValue | null>(null)
@@ -135,12 +135,12 @@ type VenomWalletProviderProps = {
 };
 
 export function VenomWalletProvider({ children }: VenomWalletProviderProps) {
-  const [address, setAddress] = useState()
+  const [address, setAddress] = useState<string>()
   const [venomConnect, setVenomConnect] = useState<VenomConnect | undefined>()
   const [theme, setTheme] = useState<ThemeNameList | string>(INIT_THEME)
 
-  const [balance, setBalance] = useState()
-  const [publicKey, setPublicKey] = useState()
+  const [balance, setBalance] = useState<number | null>(null)
+  const [publicKey, setPublicKey] = useState<string | undefined>()
 
   const [venomProvider, setVenomProvider] = useState<any>()
 

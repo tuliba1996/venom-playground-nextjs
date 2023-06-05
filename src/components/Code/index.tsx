@@ -29,18 +29,18 @@ type Props = {
   onFullScreen?: () => void
 }
 
-export function Code({
-                       id,
-                       value = '',
-                       mode = 'json',
-                       title,
-                       tabs,
-                       minLines,
-                       readOnly = true,
-                       isFullScreen,
-                       onFullScreen,
-                       ...props
-                     }: Props): JSX.Element {
+export const CodeComponent = (
+  {
+    id,
+    value = '',
+    mode = 'json',
+    title,
+    tabs,
+    minLines, readOnly = true,
+    isFullScreen,
+    onFullScreen,
+    ...props
+  }: Props) => {
   const fullScreen = useToggler()
 
   const reactAceComponent = React.useRef<AceEditor>(null)
@@ -60,10 +60,10 @@ export function Code({
   )
 
   return (
-    <>
+    <div>
       {fullScreen.active && (
         <CodePopup onClose={fullScreen.disable}>
-          <Code
+          <CodeComponent
             isFullScreen
             id={id}
             value={value}
@@ -108,6 +108,6 @@ export function Code({
           }}
         />
       </div>
-    </>
+    </div>
   )
 }

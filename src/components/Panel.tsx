@@ -40,7 +40,7 @@ interface PanelType extends FC<PanelProps> {
   Input: FC<PanelInputProps>
 }
 
-const Panel: (props: PanelProps) => JSX.Element = (props: PanelProps) => {
+const Panel: PanelType = (props: PanelProps) => {
   const { open, isLoading, onClick, children, chevron = true } = props
 
   const childrenArray = React.Children.toArray(children)

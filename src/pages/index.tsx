@@ -66,7 +66,7 @@ export default function Home() {
           </div>
           <div className='flex mt-4 w-full items-center'>
             <span className='mr-16 w-1/2 shrink-0 text-gray-400'>Network</span>
-            {getNetWorkData(currentNetworkId, 'name') as string}
+            {getNetWorkData(currentNetworkId, 'name')}
           </div>
           <div className='flex mt-4 w-full items-center break-all'>
             <span className='mr-16 w-1/2 shrink-0 text-gray-400'>Address</span>

@@ -38,17 +38,17 @@ export function Copy({ text, label, hint, children }: Props): JSX.Element | null
       content={<Tooltip>{hint ?? 'Copied'}</Tooltip>}
     >
       <div>
-        <CopyToClipboard text={text} onCopy={onCopy}>
-          {children ?? (
-            <div className={styles.root}>
-              {label && <div className={styles.label}>{label}</div>}
+        {/*<CopyToClipboard text={text} onCopy={onCopy}>*/}
+        {/*  {children ?? (*/}
+        {/*    <div className={styles.root}>*/}
+        {/*      /!*{label && <div className={styles.label}>{label}</div>}*!/*/}
 
-              <button title='Copy' type='button' className={styles.btn}>
-                <img src={copySvg} />
-              </button>
-            </div>
-          )}
-        </CopyToClipboard>
+        {/*      <button title='Copy' type='button' className={styles.btn}>*/}
+        {/*        <img src={copySvg} />*/}
+        {/*      </button>*/}
+        {/*    </div>*/}
+        {/*  )}*/}
+        {/*</CopyToClipboard>*/}
       </div>
     </Popover>
   )
